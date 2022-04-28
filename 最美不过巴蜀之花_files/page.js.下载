@@ -1,0 +1,114 @@
+function go(totalPage){
+	var goStr = document.getElementById("pageIndex").value;
+	var pageIndex = new Number(goStr);
+	if(isNaN(pageIndex)||(pageIndex==0&&goStr!='0')){
+		alert('请输入跳转到哪一页');
+		return false;
+	}
+	var url = document.getElementById("go").href;
+	if(pageIndex>totalPage){
+		pageIndex=totalPage;
+	}
+	if(pageIndex<1){
+		pageIndex=1;
+	}
+	document.getElementById("go").href = url+pageIndex+".html";
+	return true;
+}
+
+function contentPage(){
+	if(typeof(urlPath) == 'undefined'){
+		getContentPage();
+	}else{
+		getPreviewPage();
+	}
+}
+
+function getContentPage(){
+	var html = "";
+	var currPage = $("#contentCurrPage").val();//当前页
+	var totalPage = $("#contentTotalPage").val();//总页数
+	var contenturl = $("#contenturl").val();
+	
+	if(totalPage >1){
+	
+		$("#contentPageList").show();
+		var beforeUrl = (currPage == 1 || currPage == 2) ? contenturl+".html" : contenturl+"_"+(currPage-1)+".html";
+		html += '<a href="'+beforeUrl+'">上一页</a>&nbsp;&nbsp;';
+		var num = parseInt(totalPage)+1;
+		for(var i=1 ; i<num; i++){
+			var pageUrl = i==1 ? contenturl+".html" : contenturl+"_"+i+".html";
+			html += '<a href="'+pageUrl+'" class="highWordNum" ';
+			if(currPage == i){
+				html += 'style="color:red"';
+			}
+			html += '>'+i+'</a>&nbsp;&nbsp;'
+		}
+		
+		var nextUrl = currPage == totalPage ? contenturl+"_"+parseInt(totalPage)+".html":contenturl+"_"+(parseInt(currPage)+1)+".html" ;
+		html += '<a href="'+nextUrl+'">下一页</a>&nbsp;&nbsp;';
+	}
+	$("#pageTD").html(html);
+}
+
+function getPreviewPage(){
+	var html = "";
+	var currPage = $("#contentCurrPage").val();//当前页
+	var totalPage = $("#contentTotalPage").val();//总页数
+	
+	if(totalPage >1){
+	
+		$("#contentPageList").show();
+		
+		html += '<a onclick="beforPrePage()">上一页</a>&nbsp;&nbsp;';
+		var num = parseInt(totalPage)+1;
+		for(var i=1 ; i<num; i++){
+			
+			html += '<a href="###" onclick="gotoPrePage('+i+')" class="highWordNum" ';
+			if(currPage == i){
+				html += 'style="color:red"';
+			}
+			html += '>'+i+'</a>&nbsp;&nbsp;'
+		}
+		
+		
+		html += '<a href="###" onclick="afterPrePage()">下一页</a>&nbsp;&nbsp;';
+	}
+	$("#pageTD").html(html);
+}
+
+
+function getCMSPath(){
+	var curWwwPath=window.document.location.href;
+	var pathName=window.document.location.pathname;
+	var pos=curWwwPath.indexOf(pathName);
+	var localhostPaht=curWwwPath.substring(0,pos);
+	var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
+	return(localhostPaht+projectName);
+}
+function gotoPrePage(page){
+	var contentID = $("#contentID").val();
+	var catalogID = $("#thisCatalogId").val();
+	var url = getCMSPath()+"/publish/templatetohtml?contentID="+contentID+"&catalogId="+catalogID+"&page="+page;
+	window.location.href=url;
+}
+
+function beforPrePage(){
+	var contentID = $("#contentID").val();
+	var catalogID = $("#thisCatalogId").val();
+	var currPage = $("#contentCurrPage").val();//当前页
+	var totalPage = $("#contentTotalPage").val();//总页数
+	var beforeUrl = currPage == 1 ? 1 :(parseInt(currPage)-1);
+	var url = getCMSPath()+"/publish/templatetohtml?contentID="+contentID+"&catalogId="+catalogID+"&page="+beforeUrl;
+	window.location.href=url;
+}
+
+function afterPrePage(){
+	var contentID = $("#contentID").val();
+	var catalogID = $("#thisCatalogId").val();
+	var currPage = $("#contentCurrPage").val();//当前页
+	var totalPage = $("#contentTotalPage").val();//总页数
+	var nextUrl = currPage == totalPage ?parseInt(totalPage):(parseInt(currPage)+1);
+	var url = getCMSPath()+"/publish/templatetohtml?contentID="+contentID+"&catalogId="+catalogID+"&page="+nextUrl;
+	window.location.href=url;
+}
